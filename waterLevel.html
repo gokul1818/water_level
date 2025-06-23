@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Live Water Tank Level</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", sans-serif;
+        background: linear-gradient(to right, #00c6ff, #0072ff);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+      }
+
+      #level {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+      }
+
+      .tank-container {
+        position: relative;
+        width: 200px;
+        height: 350px;
+        border: 5px solid #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .water {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: rgba(0, 255, 255, 0.6);
+        transition: height 0.5s ease-in-out;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+      }
+
+      @media screen and (max-width: 600px) {
+        .tank-container {
+          width: 140px;
+          height: 260px;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+        }
+
+        #level {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🚰 Water Tank Monitor</h1>
+    <div id="level">Waiting for data...</div>
+
+    <div class="tank-container">
+      <div class="water" id="water-fill" style="height: 0%"></div>
+    </div>
+
+    <script>
+      const ws = new WebSocket("wss://my-portfolio-express-server.onrender.com");
+
+      ws.onmessage = (event) => {
+        const { level } = JSON.parse(event.data);
+        const maxTankHeight = 100; // cm
+
+        const percent = Math.min((level / maxTankHeight) * 100, 100);
+
+        document.getElementById("level").textContent = `${level.toFixed(1)} cm`;
+        document.getElementById("water-fill").style.height = `${percent}%`;
+      };
+    </script>
+  </body>
+</html>
